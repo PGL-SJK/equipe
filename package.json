@@ -1,0 +1,73 @@
+{
+  "name": "sistema-gestao-equipe",
+  "version": "1.0.0",
+  "description": "Sistema web para gerenciamento inteligente de colaboradores e redistribuição dinâmica de atribuições",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "build": "echo 'Build process - futuras implementações'",
+    "test": "echo 'Testes - futuras implementações'",
+    "deploy": "echo 'Deploy process - configurar GitHub Pages'",
+    "lint": "echo 'Linting - futuras implementações'"
+  },
+  "keywords": [
+    "gestao-equipe",
+    "redistribuicao",
+    "colaboradores",
+    "google-sheets",
+    "logistica",
+    "atribuicoes",
+    "responsivo",
+    "web-app"
+  ],
+  "author": {
+    "name": "Desenvolvedor",
+    "email": "dev@empresa.com"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/sistema-gestao-equipe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/usuario/sistema-gestao-equipe/issues"
+  },
+  "homepage": "https://usuario.github.io/sistema-gestao-equipe",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "dependencies": {},
+  "config": {
+    "port": "8000"
+  },
+  "metadata": {
+    "created": "2025-08-25",
+    "technology": {
+      "frontend": "HTML5, CSS3, JavaScript ES6+",
+      "api": "Google Sheets API v4",
+      "design": "Material Design",
+      "hosting": "GitHub Pages"
+    },
+    "features": [
+      "Gestão dinâmica de colaboradores",
+      "Redistribuição de atribuições",
+      "Interface responsiva",
+      "Integração Google Sheets",
+      "Cache local",
+      "Sincronização automática"
+    ],
+    "target_users": "Equipes de logística e operações"
+  }
+}
