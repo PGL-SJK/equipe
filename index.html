@@ -7,43 +7,29 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
         .card-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
-        .card-hover {
-            transition: all 0.3s ease;
-            transform: translateY(0);
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .selected-for-redistribution {
-            background-color: #10B981 !important;
-            color: white !important;
-            border: 2px solid #059669 !important;
-        }
-        
         .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
         }
         
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
+        .modal-content {
+            transition: all 0.3s ease-in-out;
+            transform: scale(0.95);
+            opacity: 0;
         }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
         }
         
         .btn-primary {
@@ -55,7 +41,16 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
+        .btn-secondary {
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
         .loading-spinner {
             border: 3px solid #f3f4f6;
             border-top: 3px solid #667eea;
@@ -69,9 +64,16 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .selected-for-redistribution {
+            background-color: #d1fae5;
+            border-color: #10B981;
+            color: #065f46;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-100 min-h-screen">
+    
     <!-- Header -->
     <header class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -153,15 +155,13 @@
         </div>
 
         <!-- Actions Bar -->
-        <div class="mb-8">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                <h2 class="text-xl font-semibold text-gray-900">Equipe</h2>
-                <div class="flex space-x-3">
-                    <button id="addCollaboratorBtn" class="btn-primary text-white px-6 py-2 rounded-lg font-medium">
-                        <i class="fas fa-plus mr-2"></i>
-                        Adicionar Colaborador
-                    </button>
-                </div>
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <h2 class="text-xl font-semibold text-gray-900">Equipe</h2>
+            <div class="flex space-x-3">
+                <button id="addCollaboratorBtn" class="btn-primary text-white px-6 py-2 rounded-lg font-medium">
+                    <i class="fas fa-plus mr-2"></i>
+                    Adicionar Colaborador
+                </button>
             </div>
         </div>
 
@@ -171,80 +171,12 @@
         </div>
     </main>
 
-    <!-- Add/Edit Collaborator Modal -->
-    <div id="collaboratorModal" class="fixed inset-0 z-50 hidden">
-        <div class="modal-backdrop fixed inset-0" onclick="closeCollaboratorModal()"></div>
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full slide-in">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Adicionar Colaborador</h3>
-                </div>
-                <form id="collaboratorForm" class="p-6">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                            <input type="text" id="collaboratorName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Função Principal</label>
-                            <input type="text" id="collaboratorFunction" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Atribuições (uma por linha)</label>
-                            <textarea id="collaboratorAttributes" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite uma atribuição por linha..."></textarea>
-                        </div>
-                    </div>
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" onclick="closeCollaboratorModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn-primary text-white px-6 py-2 rounded-md font-medium">
-                            Salvar
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Redistribution Modal -->
-    <div id="redistributionModal" class="fixed inset-0 z-50 hidden">
-        <div class="modal-backdrop fixed inset-0" onclick="closeRedistributionModal()"></div>
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full slide-in">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">Redistribuir Atribuições</h3>
-                    <p id="redistributionSubtitle" class="text-sm text-gray-600 mt-1"></p>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="text-md font-semibold text-gray-900 mb-3">Atribuições Disponíveis</h4>
-                            <div id="attributesList" class="space-y-2 max-h-60 overflow-y-auto">
-                                <!-- Attributes will be listed here -->
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="text-md font-semibold text-gray-900 mb-3">Redistribuir para:</h4>
-                            <select id="targetCollaborator" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
-                                <option value="">Selecione um colaborador</option>
-                            </select>
-                            
-                            <div id="selectedAttributes" class="border border-gray-200 rounded-lg p-4 min-h-32">
-                                <p class="text-gray-500 text-sm">Selecione atribuições para redistribuir</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button onclick="closeRedistributionModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
-                            Cancelar
-                        </button>
-                        <button id="applyRedistributionBtn" onclick="applyRedistribution()" class="btn-primary text-white px-6 py-2 rounded-md font-medium" disabled>
-                            Aplicar Redistribuição
-                        </button>
-                    </div>
-                </div>
+    <!-- Modal Base HTML -->
+    <div id="modalBase" class="modal fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0"></div>
+        <div class="modal-content bg-white rounded-lg shadow-xl w-full relative">
+            <div class="p-6">
+                <!-- Content will be injected here -->
             </div>
         </div>
     </div>
@@ -257,21 +189,35 @@
     <script>
         // Google Sheets Configuration
         const GOOGLE_SHEETS_CONFIG = {
-            apiKey: 'AIzaSyDSlHmeLWmo_AqlgnfHOgoxzj8r9JGZKd4',
-            spreadsheetId: '1T8UVwalXffnC3EKWBxvSD5GawV5aHh7U1JNTAEUqqP8',
-            serviceAccountEmail: 'gestao-equipe-service@gestaoequipe-470023.iam.gserviceaccount.com',
+            apiKey: 'AIzaSyCWZSMFBNPeqeqIKguouK3T_LAYZo5-QGU',
+            spreadsheetId: '11QvTVvih3V1JeMMbIChaQr8N1z2Ra2iH2LFUb2h-5zs',
+            webAppUrl: 'https://script.google.com/macros/s/AKfycbzRN_glHZeLaCJV-5ym1KB1O4lu5NWzVTDZKEokz5t8ftHxXOL_ocD8AX5iZjtcMRk0Hw/exec',
             sheetsApi: 'https://sheets.googleapis.com/v4/spreadsheets'
         };
 
         // Global State
         let colaboradores = [];
-        let currentEditingId = null;
-        let selectedAttributes = [];
-        let currentRedistributionSource = null;
         let redistributionCount = 0;
+        let selectedAttributes = [];
+        let isInitialLoad = true;
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
+        // Modal State
+        const modal = document.getElementById('modalBase');
+        const modalContent = modal.querySelector('.modal-content');
+
+        const MODAL_TYPES = {
+            ADD_EDIT: 'add-edit',
+            VIEW_DETAILS: 'view-details',
+            REDISTRIBUTION: 'redistribution',
+            DELETE_CONFIRMATION: 'delete-confirmation'
+        };
+
+        let currentModalType = null;
+        let currentModalData = null;
+
+        // --- Core Functions ---
+
+        document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
             setupEventListeners();
         });
@@ -280,6 +226,13 @@
             showLoading();
             try {
                 await loadFromGoogleSheets();
+                if (colaboradores.length === 0) {
+                    // Se a planilha estiver vazia, carrega do local storage e sincroniza
+                    loadFromLocalStorage();
+                    await saveToGoogleSheets();
+                } else {
+                    saveToLocalStorage();
+                }
                 renderTeam();
                 updateStats();
                 showToast('Sistema carregado com sucesso!', 'success');
@@ -294,12 +247,12 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('addCollaboratorBtn').addEventListener('click', () => openCollaboratorModal());
-            document.getElementById('collaboratorForm').addEventListener('submit', handleCollaboratorSubmit);
+            document.getElementById('addCollaboratorBtn').addEventListener('click', () => openModal(MODAL_TYPES.ADD_EDIT));
             document.getElementById('syncBtn').addEventListener('click', syncWithGoogleSheets);
         }
 
-        // Google Sheets Integration
+        // --- Data Persistence (Google Sheets & Local Storage) ---
+
         async function loadFromGoogleSheets() {
             const url = `${GOOGLE_SHEETS_CONFIG.sheetsApi}/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/colaboradores!A:D?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
             
@@ -327,7 +280,7 @@
             showLoading();
             try {
                 const values = [
-                    ['Nome', 'Função', 'Atribuições', 'Ativo']
+                    ['Nome', 'Funcao', 'Atribuicoes', 'Ativo']
                 ];
                 
                 colaboradores.forEach(col => {
@@ -339,10 +292,10 @@
                     ]);
                 });
 
-                const url = `${GOOGLE_SHEETS_CONFIG.sheetsApi}/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/colaboradores!A:D?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+                const url = GOOGLE_SHEETS_CONFIG.webAppUrl;
                 
                 const response = await fetch(url, {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -375,7 +328,6 @@
             }
         }
 
-        // Local Storage Functions
         function saveToLocalStorage() {
             localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
             localStorage.setItem('redistributionCount', redistributionCount.toString());
@@ -388,77 +340,33 @@
             if (savedData) {
                 colaboradores = JSON.parse(savedData);
             } else {
-                // Initialize with default data
                 colaboradores = [
                     {
                         id: 1,
                         name: "Cristiane Godoi",
                         function: "Analista Marítimo Rotina",
-                        attributes: [
-                            "Coordenação dos processos marítimos: Containers Padrão – DRY e HC",
-                            "Abertura de Processos no Importsys: Marítimo carga geral",
-                            "Abertura de Processos no Icomex: Marítimo carga geral",
-                            "Aprovação de Debit Note / Emissão de Credit note / Debit note: Marítimo carga geral",
-                            "Elaboração de Originais no modal marítimo carga geral",
-                            "Envio de Pré-Alerta Marítimo carga geral",
-                            "Alimentação de desvios no Importsys Marítimo carga geral",
-                            "FUP / SLA / Atualização Relatório Marítimo carga geral",
-                            "Impressão dos originais e envio para Santos",
-                            "Relatório Demurrage e Lavagem de CTN",
-                            "Embarque Marítimos Spots carga geral e OVS"
-                        ],
+                        attributes: ["Coordenação dos processos marítimos: Containers Padrão – DRY e HC", "Abertura de Processos no Importsys: Marítimo carga geral", "Abertura de Processos no Icomex: Marítimo carga geral", "Aprovação de Debit Note / Emissão de Credit note / Debit note: Marítimo carga geral", "Elaboração de Originais no modal marítimo carga geral", "Envio de Pré-Alerta Marítimo carga geral", "Alimentação de desvios no Importsys Marítimo carga geral", "FUP / SLA / Atualização Relatório Marítimo carga geral", "Impressão dos originais e envio para Santos", "Relatório Demurrage e Lavagem de CTN", "Embarque Marítimos Spots carga geral e OVS"],
                         active: true
                     },
                     {
                         id: 2,
                         name: "Brunna",
                         function: "Analista Marítimo OVS",
-                        attributes: [
-                            "Coordenação dos processos marítimos: Embarque marítimo OVS BID",
-                            "Abertura de Processos no Importsys: Marítimo OVS",
-                            "Abertura de Processos no Icomex: Marítimo OVS",
-                            "Aprovação de Debit Note / Emissão de Credit note / Debit note: Marítimo OVS",
-                            "Elaboração de Originais no modal marítimo OVS",
-                            "Envio de Pré-Alerta Marítimo OVS",
-                            "Alimentação de desvios no Importsys Marítimo OVS",
-                            "FUP / SLA / Atualização Relatório Marítimo OVS"
-                        ],
+                        attributes: ["Coordenação dos processos marítimos: Embarque marítimo OVS BID", "Abertura de Processos no Importsys: Marítimo OVS", "Abertura de Processos no Icomex: Marítimo OVS", "Aprovação de Debit Note / Emissão de Credit note / Debit note: Marítimo OVS", "Elaboração de Originais no modal marítimo OVS", "Envio de Pré-Alerta Marítimo OVS", "Alimentação de desvios no Importsys Marítimo OVS", "FUP / SLA / Atualização Relatório Marítimo OVS"],
                         active: true
                     },
                     {
                         id: 3,
                         name: "Giulia Gouvea",
                         function: "Analista Aéreo e Marítimo",
-                        attributes: [
-                            "Realização do RA: Spots (os analistas comunicarão sobre o fim do embarque)",
-                            "Elaboração de Propostas: Spots",
-                            "Cotação Spot",
-                            "Projetos Célula Embraer",
-                            "Elaboração de atas das reuniões",
-                            "Solicitação de autorizações de custo extra / CW fora do BID / demais autorizações / autorização AOG definidas em reunião",
-                            "Data de pick up – Aéreo e Marítimo",
-                            "Levantamento de históricos dos processos para Reinaldo",
-                            "Eventuais ajudas no RA BID solicitadas pelo Reinaldo",
-                            "Embarque Aéreo Spots"
-                        ],
+                        attributes: ["Realização do RA: Spots (os analistas comunicarão sobre o fim do embarque)", "Elaboração de Propostas: Spots", "Cotação Spot", "Projetos Célula Embraer", "Elaboração de atas das reuniões", "Solicitação de autorizações de custo extra / CW fora do BID / demais autorizações / autorização AOG definidas em reunião", "Data de pick up – Aéreo e Marítimo", "Levantamento de históricos dos processos para Reinaldo", "Eventuais ajudas no RA BID solicitadas pelo Reinaldo", "Embarque Aéreo Spots"],
                         active: true
                     },
                     {
                         id: 4,
                         name: "Luis Souza",
                         function: "Analista Aéreo Rotina",
-                        attributes: [
-                            "Relatório de Faturas no Warehouse",
-                            "Cobrança do valor do combustível mensalmente",
-                            "Coordenação dos processos aéreos: AOG / Rotina / B2B / (Charter – em conjunto com o Reinaldo)",
-                            "Embarque Aéreo Spots carga geral e OVS",
-                            "Abertura de Processos no Importsys: Aéreo carga geral",
-                            "Abertura de Processos no Icomex: Aéreo carga geral",
-                            "Aprovação de Debit Note / Emissão de Credit note / Debit note: Aéreo",
-                            "Envio de Pré-Alerta Aéreo carga geral",
-                            "Alimentação de desvios no Importsys Aéreo carga geral",
-                            "FUP / SLA / Atualização Relatório Aéreo carga geral"
-                        ],
+                        attributes: ["Relatório de Faturas no Warehouse", "Cobrança do valor do combustível mensalmente", "Coordenação dos processos aéreos: AOG / Rotina / B2B / (Charter – em conjunto com o Reinaldo)", "Embarque Aéreo Spots carga geral e OVS", "Abertura de Processos no Importsys: Aéreo carga geral", "Abertura de Processos no Icomex: Aéreo carga geral", "Aprovação de Debit Note / Emissão de Credit note / Debit note: Aéreo", "Envio de Pré-Alerta Aéreo carga geral", "Alimentação de desvios no Importsys Aéreo carga geral", "FUP / SLA / Atualização Relatório Aéreo carga geral"],
                         active: true
                     }
                 ];
@@ -469,11 +377,11 @@
             }
         }
 
-        // Render Functions
+        // --- UI Rendering ---
+
         function renderTeam() {
             const teamGrid = document.getElementById('teamGrid');
             teamGrid.innerHTML = '';
-
             colaboradores.filter(col => col.active).forEach(colaborador => {
                 const card = createCollaboratorCard(colaborador);
                 teamGrid.appendChild(card);
@@ -482,59 +390,56 @@
 
         function createCollaboratorCard(colaborador) {
             const card = document.createElement('div');
-            card.className = 'bg-white rounded-lg shadow-md card-hover overflow-hidden';
+            card.className = 'bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 transform hover:scale-105';
             
             const initials = colaborador.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             
             card.innerHTML = `
-                <div class="card-gradient p-4">
+                <div class="card-gradient p-5 text-white">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">${initials}</span>
+                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center font-bold text-lg">
+                                ${initials}
                             </div>
                         </div>
                         <div class="ml-4">
-                            <h3 class="text-white font-semibold text-lg">${colaborador.name}</h3>
+                            <h3 class="font-semibold text-lg">${colaborador.name}</h3>
                             <p class="text-white text-opacity-80 text-sm">${colaborador.function}</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="p-4">
+                <div class="p-5">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-sm text-gray-600">Atribuições</span>
+                        <span class="text-sm text-gray-600 font-medium">Atribuições</span>
                         <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full">
                             ${colaborador.attributes.length}
                         </span>
                     </div>
                     
-                    <div class="space-y-1 mb-4 max-h-32 overflow-y-auto">
+                    <div class="space-y-2 mb-4 max-h-32 overflow-y-auto">
                         ${colaborador.attributes.slice(0, 3).map(attr => 
-                            `<div class="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded">${attr.substring(0, 60)}${attr.length > 60 ? '...' : ''}</div>`
+                            `<div class="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-md">${attr.substring(0, 50)}${attr.length > 50 ? '...' : ''}</div>`
                         ).join('')}
                         ${colaborador.attributes.length > 3 ? 
-                            `<div class="text-xs text-gray-500 italic">+${colaborador.attributes.length - 3} mais...</div>` 
+                            `<div class="text-xs text-gray-500 italic px-3 pt-1">+${colaborador.attributes.length - 3} mais...</div>` 
                             : ''}
                     </div>
                     
-                    <div class="flex space-x-2">
-                        <button onclick="viewCollaborator(${colaborador.id})" class="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors">
+                    <div class="flex flex-col space-y-2">
+                        <button onclick="openModal(MODAL_TYPES.VIEW_DETAILS, ${colaborador.id})" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200">
                             <i class="fas fa-eye mr-1"></i>
                             Ver Detalhes
                         </button>
-                        <button onclick="openRedistributionModal(${colaborador.id})" class="flex-1 bg-purple-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-purple-700 transition-colors">
+                        <button onclick="openModal(MODAL_TYPES.REDISTRIBUTION, ${colaborador.id})" class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition-colors duration-200">
                             <i class="fas fa-exchange-alt mr-1"></i>
                             Redistribuir
                         </button>
-                    </div>
-                    
-                    <div class="flex space-x-2 mt-2">
-                        <button onclick="editCollaborator(${colaborador.id})" class="flex-1 bg-gray-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-gray-700 transition-colors">
+                        <button onclick="openModal(MODAL_TYPES.ADD_EDIT, ${colaborador.id})" class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
                             <i class="fas fa-edit mr-1"></i>
                             Editar
                         </button>
-                        <button onclick="deleteCollaborator(${colaborador.id})" class="flex-1 bg-red-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-red-700 transition-colors">
+                        <button onclick="openModal(MODAL_TYPES.DELETE_CONFIRMATION, ${colaborador.id})" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors duration-200">
                             <i class="fas fa-trash mr-1"></i>
                             Excluir
                         </button>
@@ -545,32 +450,186 @@
             return card;
         }
 
-        // Modal Functions
-        function openCollaboratorModal(colaboradorId = null) {
-            const modal = document.getElementById('collaboratorModal');
-            const title = document.getElementById('modalTitle');
-            const form = document.getElementById('collaboratorForm');
+        // --- Modal Control ---
+
+        function openModal(type, data = null) {
+            currentModalType = type;
+            currentModalData = data;
             
-            currentEditingId = colaboradorId;
-            
-            if (colaboradorId) {
-                const colaborador = colaboradores.find(c => c.id === colaboradorId);
-                title.textContent = 'Editar Colaborador';
-                document.getElementById('collaboratorName').value = colaborador.name;
-                document.getElementById('collaboratorFunction').value = colaborador.function;
-                document.getElementById('collaboratorAttributes').value = colaborador.attributes.join('\n');
-            } else {
-                title.textContent = 'Adicionar Colaborador';
-                form.reset();
+            let html = '';
+            let maxWidth = 'max-w-md';
+
+            switch (type) {
+                case MODAL_TYPES.ADD_EDIT:
+                    const colaborador = data ? colaboradores.find(c => c.id === data) : null;
+                    const modalTitle = colaborador ? 'Editar Colaborador' : 'Adicionar Colaborador';
+                    const name = colaborador ? colaborador.name : '';
+                    const func = colaborador ? colaborador.function : '';
+                    const attributes = colaborador ? colaborador.attributes.join('\n') : '';
+
+                    html = `
+                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900">${modalTitle}</h3>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form id="collaboratorForm" class="p-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                                    <input type="text" id="collaboratorName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${name}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Função Principal</label>
+                                    <input type="text" id="collaboratorFunction" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${func}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Atribuições (uma por linha)</label>
+                                    <textarea id="collaboratorAttributes" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite uma atribuição por linha...">${attributes}</textarea>
+                                </div>
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button type="button" onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn-primary text-white px-6 py-2 rounded-md font-medium">
+                                    Salvar
+                                </button>
+                            </div>
+                        </form>
+                    `;
+                    break;
+                case MODAL_TYPES.VIEW_DETAILS:
+                    const viewColaborador = colaboradores.find(c => c.id === data);
+                    if (!viewColaborador) { showToast('Colaborador não encontrado.', 'error'); return; }
+                    maxWidth = 'max-w-4xl';
+                    html = `
+                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900">Detalhes do Colaborador</h3>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-500">Nome:</p>
+                                <h4 class="text-xl font-bold text-gray-900">${viewColaborador.name}</h4>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-500">Função:</p>
+                                <p class="text-lg text-gray-800">${viewColaborador.function}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-2">Atribuições:</p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-700 max-h-60 overflow-y-auto pr-2">
+                                    ${viewColaborador.attributes.map(attr => `<li>${attr}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case MODAL_TYPES.REDISTRIBUTION:
+                    const sourceColaborador = colaboradores.find(c => c.id === data);
+                    if (!sourceColaborador) { showToast('Colaborador não encontrado.', 'error'); return; }
+                    
+                    const otherCollaborators = colaboradores.filter(c => c.id !== data && c.active);
+                    selectedAttributes = [];
+
+                    html = `
+                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900">Redistribuir Atribuições</h3>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-sm text-gray-600 mb-4">Redistribuir atribuições de: <span class="font-semibold">${sourceColaborador.name}</span></p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-md font-semibold text-gray-900 mb-3">Atribuições Disponíveis</h4>
+                                    <div id="attributesList" class="space-y-2 max-h-60 overflow-y-auto">
+                                        ${sourceColaborador.attributes.length > 0
+                                            ? sourceColaborador.attributes.map((attr, index) => `
+                                                <div class="p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleAttributeSelection(this, '${encodeURIComponent(attr)}', ${index})">
+                                                    ${attr}
+                                                </div>
+                                            `).join('')
+                                            : `<p class="text-gray-500 text-sm">Nenhuma atribuição disponível</p>`
+                                        }
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-md font-semibold text-gray-900 mb-3">Redistribuir para:</h4>
+                                    <select id="targetCollaborator" onchange="checkRedistributionConditions()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+                                        <option value="">Selecione um colaborador</option>
+                                        ${otherCollaborators.map(col => `<option value="${col.id}">${col.name}</option>`).join('')}
+                                    </select>
+                                    
+                                    <div id="selectedAttributes" class="border border-gray-200 rounded-lg p-4 min-h-32">
+                                        <p class="text-gray-500 text-sm">Selecione atribuições para redistribuir</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                                    Cancelar
+                                </button>
+                                <button id="applyRedistributionBtn" onclick="applyRedistribution(${sourceColaborador.id})" class="btn-primary text-white px-6 py-2 rounded-md font-medium opacity-50 cursor-not-allowed" disabled>
+                                    Aplicar Redistribuição
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case MODAL_TYPES.DELETE_CONFIRMATION:
+                    const deleteColaborador = colaboradores.find(c => c.id === data);
+                    if (!deleteColaborador) { showToast('Colaborador não encontrado.', 'error'); return; }
+                    maxWidth = 'max-w-sm';
+                    html = `
+                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900">Confirmar Exclusão</h3>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-700 mb-6">Tem certeza que deseja excluir <span class="font-semibold">${deleteColaborador.name}</span>? Esta ação não pode ser desfeita.</p>
+                            <div class="flex justify-end space-x-3">
+                                <button onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                                    Cancelar
+                                </button>
+                                <button onclick="performDelete(${deleteColaborador.id})" class="bg-red-600 text-white px-6 py-2 rounded-md font-medium hover:bg-red-700 transition-colors duration-200">
+                                    Confirmar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
             }
-            
+
+            modalContent.innerHTML = html;
+            modalContent.classList.add(maxWidth);
+            modal.classList.add('active');
             modal.classList.remove('hidden');
+            
+            if (type === MODAL_TYPES.ADD_EDIT) {
+                document.getElementById('collaboratorForm').addEventListener('submit', handleCollaboratorSubmit);
+            }
         }
 
-        function closeCollaboratorModal() {
-            document.getElementById('collaboratorModal').classList.add('hidden');
-            currentEditingId = null;
+        function closeModal() {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modalContent.innerHTML = '';
+            }, 300);
+            currentModalType = null;
+            currentModalData = null;
+            selectedAttributes = [];
         }
+
+        // --- Action Handlers ---
 
         function handleCollaboratorSubmit(event) {
             event.preventDefault();
@@ -587,15 +646,13 @@
                 return;
             }
             
-            if (currentEditingId) {
-                // Edit existing
-                const colaborador = colaboradores.find(c => c.id === currentEditingId);
+            if (currentModalData) {
+                const colaborador = colaboradores.find(c => c.id === currentModalData);
                 colaborador.name = name;
                 colaborador.function = func;
                 colaborador.attributes = attributes;
                 showToast('Colaborador atualizado com sucesso!', 'success');
             } else {
-                // Add new
                 const newId = Math.max(...colaboradores.map(c => c.id), 0) + 1;
                 colaboradores.push({
                     id: newId,
@@ -611,85 +668,60 @@
             saveToGoogleSheets();
             renderTeam();
             updateStats();
-            closeCollaboratorModal();
+            closeModal();
         }
 
-        // Redistribution Functions
-        function openRedistributionModal(colaboradorId) {
-            const colaborador = colaboradores.find(c => c.id === colaboradorId);
-            currentRedistributionSource = colaboradorId;
-            selectedAttributes = [];
+        function toggleAttributeSelection(element, encodedAttribute, index) {
+            // use decodeURIComponent to support accents and unicode reliably
+            const attribute = decodeURIComponent(encodedAttribute);
+            const isSelected = element.classList.toggle('selected-for-redistribution');
+            const item = { attribute, index };
             
-            const modal = document.getElementById('redistributionModal');
-            const subtitle = document.getElementById('redistributionSubtitle');
-            const attributesList = document.getElementById('attributesList');
-            const targetSelect = document.getElementById('targetCollaborator');
-            
-            subtitle.textContent = `Redistribuir atribuições de: ${colaborador.name}`;
-            
-            // Populate attributes list
-            attributesList.innerHTML = '';
-            colaborador.attributes.forEach((attr, index) => {
-                const attrDiv = document.createElement('div');
-                attrDiv.className = 'p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors';
-                attrDiv.textContent = attr;
-                attrDiv.onclick = () => toggleAttributeSelection(attrDiv, attr, index);
-                attributesList.appendChild(attrDiv);
-            });
-            
-            // Populate target collaborators
-            targetSelect.innerHTML = '<option value="">Selecione um colaborador</option>';
-            colaboradores.filter(c => c.id !== colaboradorId && c.active).forEach(col => {
-                const option = document.createElement('option');
-                option.value = col.id;
-                option.textContent = col.name;
-                targetSelect.appendChild(option);
-            });
-            
-            modal.classList.remove('hidden');
-            updateSelectedAttributes();
-        }
-
-        function closeRedistributionModal() {
-            document.getElementById('redistributionModal').classList.add('hidden');
-            selectedAttributes = [];
-            currentRedistributionSource = null;
-        }
-
-        function toggleAttributeSelection(element, attribute, index) {
-            if (element.classList.contains('selected-for-redistribution')) {
-                element.classList.remove('selected-for-redistribution');
-                selectedAttributes = selectedAttributes.filter(attr => attr.index !== index);
+            if (isSelected) {
+                selectedAttributes.push(item);
             } else {
-                element.classList.add('selected-for-redistribution');
-                selectedAttributes.push({ attribute, index });
+                selectedAttributes = selectedAttributes.filter(attr => attr.index !== index);
             }
             updateSelectedAttributes();
+            checkRedistributionConditions();
         }
 
         function updateSelectedAttributes() {
             const container = document.getElementById('selectedAttributes');
-            const applyBtn = document.getElementById('applyRedistributionBtn');
+            
+            if (!container) return;
             
             if (selectedAttributes.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 text-sm">Selecione atribuições para redistribuir</p>';
-                applyBtn.disabled = true;
-                applyBtn.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
                 container.innerHTML = `
                     <div class="space-y-2">
                         <p class="font-semibold text-sm text-gray-700">Atribuições selecionadas (${selectedAttributes.length}):</p>
                         ${selectedAttributes.map(item => 
-                            `<div class="bg-green-50 border border-green-200 rounded p-2 text-sm">${item.attribute}</div>`
+                            `<div class="bg-green-50 border border-green-200 rounded-md p-2 text-sm">${item.attribute}</div>`
                         ).join('')}
                     </div>
                 `;
-                applyBtn.disabled = false;
-                applyBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
 
-        function applyRedistribution() {
+        function checkRedistributionConditions() {
+            const applyBtn = document.getElementById('applyRedistributionBtn');
+            const targetSelect = document.getElementById('targetCollaborator');
+            const targetId = targetSelect ? targetSelect.value : null;
+            
+            if (!applyBtn) return;
+            
+            if (selectedAttributes.length > 0 && targetId) {
+                applyBtn.disabled = false;
+                applyBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                applyBtn.disabled = true;
+                applyBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function applyRedistribution(sourceId) {
             const targetId = parseInt(document.getElementById('targetCollaborator').value);
             
             if (!targetId || selectedAttributes.length === 0) {
@@ -697,15 +729,13 @@
                 return;
             }
             
-            const sourceCollaborator = colaboradores.find(c => c.id === currentRedistributionSource);
+            const sourceCollaborator = colaboradores.find(c => c.id === sourceId);
             const targetCollaborator = colaboradores.find(c => c.id === targetId);
             
-            // Move attributes
             selectedAttributes.forEach(item => {
                 targetCollaborator.attributes.push(item.attribute);
             });
             
-            // Remove from source (in reverse order to maintain indices)
             selectedAttributes.sort((a, b) => b.index - a.index).forEach(item => {
                 sourceCollaborator.attributes.splice(item.index, 1);
             });
@@ -716,27 +746,14 @@
             saveToGoogleSheets();
             renderTeam();
             updateStats();
-            closeRedistributionModal();
+            closeModal();
             
             showToast(`${selectedAttributes.length} atribuição(ões) redistribuída(s) com sucesso!`, 'success');
         }
 
-        // Other Functions
-        function viewCollaborator(id) {
+        function performDelete(id) {
             const colaborador = colaboradores.find(c => c.id === id);
-            const attributesList = colaborador.attributes.map(attr => `• ${attr}`).join('\n');
-            
-            alert(`Nome: ${colaborador.name}\nFunção: ${colaborador.function}\n\nAtribuições:\n${attributesList}`);
-        }
-
-        function editCollaborator(id) {
-            openCollaboratorModal(id);
-        }
-
-        function deleteCollaborator(id) {
-            const colaborador = colaboradores.find(c => c.id === id);
-            
-            if (confirm(`Tem certeza que deseja excluir ${colaborador.name}?`)) {
+            if (colaborador) {
                 colaborador.active = false;
                 saveToLocalStorage();
                 saveToGoogleSheets();
@@ -744,8 +761,11 @@
                 updateStats();
                 showToast('Colaborador removido com sucesso!', 'success');
             }
+            closeModal();
         }
 
+        // --- Utility Functions ---
+        
         function updateStats() {
             const activeCollaborators = colaboradores.filter(c => c.active);
             const totalAttributes = activeCollaborators.reduce((sum, col) => sum + col.attributes.length, 0);
@@ -755,7 +775,6 @@
             document.getElementById('totalRedistribuicoes').textContent = redistributionCount;
         }
 
-        // Utility Functions
         function showLoading() {
             document.getElementById('loadingSpinner').style.display = 'block';
             document.getElementById('statusText').innerHTML = '<span class="text-blue-600">Sincronizando...</span>';
@@ -782,7 +801,7 @@
                 info: 'fas fa-info-circle'
             }[type];
             
-            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 slide-in`;
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2`;
             toast.innerHTML = `
                 <i class="${icon}"></i>
                 <span>${message}</span>
@@ -797,12 +816,3 @@
     </script>
 </body>
 </html>
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDtdanEyE5hBbXq%2F%2BWB0AK6MzdZopDbGLTxceP5mT%2F6esbP%2B6NZvEasb5wOKD8vRX7FEyiMZRJgkB9EmjtXWvzh7h3kUb7IPKoJk%2BPYQxppgSTxMTZvizEz%2FUfNBxs2dy7GRrPLv21ctHD8uZLb3ZwStJZRWlCamJEXEI45Usf9%2F0WhybAzgG4DdWp0G0vfnh5k1eF%2Bk0NJAvslEWko6zgiXSar39%2FXHMs8Uzma8dK0o47A1M8pasqF7iFy7PhqkK1VE0AdkAdih1zSPYKyDAOFsw2dx9FvsTe4%2BzYLWohRIqUKxRceXPkAPF6e7lqk23sUuqY7omN7IiynvbDZdr3vC9XDiJ%2BzzyHlYTD%2BnKckzDqtlVbpj7F6bwZwTiI3453af6MMwVtVFnS%2BBEksOutkE07MoRlFDlclJqm5IaRa72lfnnEo0Mw%2BBbf%2B8%2Bd8JGRG30No0HpixLkxERedXm9ceoyULLlK4Vdz7%2FqT56tPG8z7zBqW0CBqhCTdCbQ%2BsVQT6MgQyEFCz2tb6tZJv6Mqs%3D";
-        window.__genspark_locale = "pt-BR";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDtdanEyE5hBbXq/+WB0AK6MzdZopDbGLTxceP5mT/6esbP+6NZvEasb5wOKD8vRX7FEyiMZRJgkB9EmjtXWvzh7h3kUb7IPKoJk+PYQxppgSTxMTZvizEz/UfNBxs2dy7GRrPLv21ctHD8uZLb3ZwStJZRWlCamJEXEI45Usf9/0WhybAzgG4DdWp0G0vfnh5k1eF+k0NJAvslEWko6zgiXSar39/XHMs8Uzma8dK0o47A1M8pasqF7iFy7PhqkK1VE0AdkAdih1zSPYKyDAOFsw2dx9FvsTe4+zYLWohRIqUKxRceXPkAPF6e7lqk23sUuqY7omN7IiynvbDZdr3vC9XDiJ+zzyHlYTD+nKckzDqtlVbpj7F6bwZwTiI3453af6MMwVtVFnS+BEksOutkE07MoRlFDlclJqm5IaRa72lfnnEo0Mw+Bbf+8+d8JGRG30No0HpixLkxERedXm9ceoyULLlK4Vdz7/qT56tPG8z7zBqW0CBqhCTdCbQ+sVQT6MgQyEFCz2tb6tZJv6Mqs=";
-    </script>
-    
-    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
-    
