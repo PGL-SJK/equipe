@@ -303,12 +303,15 @@
                         values: values
                     })
                 });
+                
+                const result = await response.json();
+                console.log('Google Sheets API Response:', result);
 
-                if (response.ok) {
+                if (response.ok && result.status === 'success') {
                     showToast('Dados salvos no Google Sheets!', 'success');
                     document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
                 } else {
-                    throw new Error('Falha ao salvar no Google Sheets');
+                    throw new Error(result.message || 'Falha ao salvar no Google Sheets');
                 }
             } catch (error) {
                 console.error('Erro ao salvar:', error);
@@ -549,14 +552,11 @@
                                 <div>
                                     <h4 class="text-md font-semibold text-gray-900 mb-3">Atribuições Disponíveis</h4>
                                     <div id="attributesList" class="space-y-2 max-h-60 overflow-y-auto">
-                                        ${sourceColaborador.attributes.length > 0
-                                            ? sourceColaborador.attributes.map((attr, index) => `
-                                                <div class="p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleAttributeSelection(this, '${encodeURIComponent(attr)}', ${index})">
-                                                    ${attr}
-                                                </div>
-                                            `).join('')
-                                            : `<p class="text-gray-500 text-sm">Nenhuma atribuição disponível</p>`
-                                        }
+                                        ${sourceColaborador.attributes.map((attr, index) => `
+                                            <div class="p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleAttributeSelection(this, '${encodeURIComponent(attr)}', ${index})">
+                                                ${attr}
+                                            </div>
+                                        `).join('')}
                                     </div>
                                 </div>
                                 <div>
