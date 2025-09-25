@@ -187,12 +187,10 @@
     </div>
 
     <script>
-        // Google Sheets Configuration
+        // Google Sheets Configuration - ATUALIZADO
         const GOOGLE_SHEETS_CONFIG = {
-            apiKey: 'AIzaSyCWZSMFBNPeqeqIKguouK3T_LAYZo5-QGU',
-            spreadsheetId: '11QvTVvih3V1JeMMbIChaQr8N1z2Ra2iH2LFUb2h-5zs',
-            webAppUrl: 'https://script.google.com/macros/s/AKfycbzRN_glHZeLaCJV-5ym1KB1O4lu5NWzVTDZKEokz5t8ftHxXOL_ocD8AX5iZjtcMRk0Hw/exec',
-            sheetsApi: 'https://sheets.googleapis.com/v4/spreadsheets'
+            spreadsheetId: '1uAeVhMv081VAV1PnoxpAnGlqUFY05KTM1rZNTD_YAx0',
+            webAppUrl: 'https://script.google.com/macros/s/AKfycbyiOnZQUQArDnQeO8HSBDMXoZNVq_hV1F0QaCrpo1v3vzCqtTE21sd2SLQ2OcA89Dlv/exec'
         };
 
         // Global State
@@ -229,7 +227,9 @@
                 if (colaboradores.length === 0) {
                     // Se a planilha estiver vazia, carrega do local storage e sincroniza
                     loadFromLocalStorage();
-                    await saveToGoogleSheets();
+                    if (colaboradores.length > 0) {
+                        await saveToGoogleSheets();
+                    }
                 } else {
                     saveToLocalStorage();
                 }
@@ -254,26 +254,41 @@
         // --- Data Persistence (Google Sheets & Local Storage) ---
 
         async function loadFromGoogleSheets() {
-            const url = `${GOOGLE_SHEETS_CONFIG.sheetsApi}/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/colaboradores!A:D?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-            
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Falha ao carregar dados do Google Sheets');
+            try {
+                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl + '?action=get', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Falha ao carregar dados do Google Sheets');
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.values && data.values.length > 1) {
+                    const rows = data.values.slice(1); // Skip header row
+                    
+                    colaboradores = rows.map((row, index) => ({
+                        id: index + 1,
+                        name: row[0] || '',
+                        function: row[1] || '',
+                        attributes: row[2] ? row[2].split('\n').filter(attr => attr.trim()) : [],
+                        active: row[3] !== 'false'
+                    })).filter(col => col.name); // Remove empty rows
+                    
+                    saveToLocalStorage();
+                    console.log('Dados carregados do Google Sheets:', colaboradores.length, 'colaboradores');
+                } else {
+                    console.log('Planilha vazia ou sem dados válidos');
+                    colaboradores = [];
+                }
+            } catch (error) {
+                console.error('Erro ao carregar do Google Sheets:', error);
+                throw error;
             }
-            
-            const data = await response.json();
-            const rows = data.values || [];
-            
-            // Skip header row
-            colaboradores = rows.slice(1).map((row, index) => ({
-                id: index + 1,
-                name: row[0] || '',
-                function: row[1] || '',
-                attributes: row[2] ? row[2].split('\n').filter(attr => attr.trim()) : [],
-                active: row[3] !== 'false'
-            }));
-            
-            saveToLocalStorage();
         }
 
         async function saveToGoogleSheets() {
@@ -292,9 +307,7 @@
                     ]);
                 });
 
-                const url = GOOGLE_SHEETS_CONFIG.webAppUrl;
-                
-                const response = await fetch(url, {
+                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -816,3 +829,4 @@
     </script>
 </body>
 </html>
+
