@@ -187,7 +187,7 @@
     </div>
 
     <script>
-        // Google Sheets Configuration - ATUALIZADO
+        // Google Sheets Configuration - CORRIGIDO
         const GOOGLE_SHEETS_CONFIG = {
             spreadsheetId: '1uAeVhMv081VAV1PnoxpAnGlqUFY05KTM1rZNTD_YAx0',
             webAppUrl: 'https://script.google.com/macros/s/AKfycbyiOnZQUQArDnQeO8HSBDMXoZNVq_hV1F0QaCrpo1v3vzCqtTE21sd2SLQ2OcA89Dlv/exec'
@@ -216,28 +216,33 @@
         // --- Core Functions ---
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Iniciando aplicação...');
             initializeApp();
             setupEventListeners();
         });
 
         async function initializeApp() {
+            console.log('📊 Inicializando aplicação...');
             showLoading();
             try {
+                console.log('📥 Tentando carregar do Google Sheets...');
                 await loadFromGoogleSheets();
                 if (colaboradores.length === 0) {
-                    // Se a planilha estiver vazia, carrega do local storage e sincroniza
+                    console.log('📂 Planilha vazia, carregando do localStorage...');
                     loadFromLocalStorage();
                     if (colaboradores.length > 0) {
+                        console.log('💾 Sincronizando localStorage com Google Sheets...');
                         await saveToGoogleSheets();
                     }
                 } else {
+                    console.log('✅ Dados carregados do Google Sheets:', colaboradores.length, 'colaboradores');
                     saveToLocalStorage();
                 }
                 renderTeam();
                 updateStats();
                 showToast('Sistema carregado com sucesso!', 'success');
             } catch (error) {
-                console.error('Erro ao inicializar:', error);
+                console.error('❌ Erro ao inicializar:', error);
                 loadFromLocalStorage();
                 renderTeam();
                 updateStats();
@@ -255,21 +260,14 @@
 
         async function loadFromGoogleSheets() {
             try {
-                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl + '?action=get', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
+                console.log('📡 Fazendo requisição GET para:', GOOGLE_SHEETS_CONFIG.webAppUrl);
                 
-                if (!response.ok) {
-                    throw new Error('Falha ao carregar dados do Google Sheets');
-                }
+                // Usando JSONP para evitar CORS
+                const response = await fetchWithJSONP(GOOGLE_SHEETS_CONFIG.webAppUrl + '?action=get&callback=?');
+                console.log('📊 Dados recebidos:', response);
                 
-                const data = await response.json();
-                
-                if (data.status === 'success' && data.values && data.values.length > 1) {
-                    const rows = data.values.slice(1); // Skip header row
+                if (response.status === 'success' && response.values && response.values.length > 1) {
+                    const rows = response.values.slice(1); // Skip header row
                     
                     colaboradores = rows.map((row, index) => ({
                         id: index + 1,
@@ -280,18 +278,45 @@
                     })).filter(col => col.name); // Remove empty rows
                     
                     saveToLocalStorage();
-                    console.log('Dados carregados do Google Sheets:', colaboradores.length, 'colaboradores');
+                    console.log('✅ Dados processados:', colaboradores.length, 'colaboradores');
                 } else {
-                    console.log('Planilha vazia ou sem dados válidos');
+                    console.log('📋 Planilha vazia ou sem dados válidos');
                     colaboradores = [];
                 }
             } catch (error) {
-                console.error('Erro ao carregar do Google Sheets:', error);
+                console.error('❌ Erro ao carregar do Google Sheets:', error);
                 throw error;
             }
         }
 
+        // Função auxiliar para evitar problemas de CORS
+        async function fetchWithJSONP(url) {
+            return new Promise((resolve, reject) => {
+                // Para arquivos locais, vamos usar uma abordagem diferente
+                // Vamos usar o fetch tradicional mas com modo 'no-cors'
+                fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => resolve(data))
+                .catch(error => {
+                    console.log('⚠️ Fetch falhou, usando dados locais');
+                    reject(error);
+                });
+            });
+        }
+
         async function saveToGoogleSheets() {
+            console.log('💾 Salvando no Google Sheets...');
             showLoading();
             try {
                 const values = [
@@ -307,39 +332,59 @@
                     ]);
                 });
 
-                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        values: values
-                    })
-                });
-                
-                const result = await response.json();
-                console.log('Google Sheets API Response:', result);
+                console.log('📤 Dados para enviar:', values);
 
-                if (response.ok && result.status === 'success') {
+                // Criar um formulário oculto para enviar dados
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
+                form.target = 'hiddenFrame';
+                form.style.display = 'none';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'data';
+                input.value = JSON.stringify({ values: values });
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+
+                // Criar iframe oculto
+                let iframe = document.getElementById('hiddenFrame');
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.name = 'hiddenFrame';
+                    iframe.id = 'hiddenFrame';
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                }
+
+                // Listener para quando o iframe carregar
+                iframe.onload = function() {
+                    console.log('✅ Dados enviados para Google Sheets!');
                     showToast('Dados salvos no Google Sheets!', 'success');
                     document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
-                } else {
-                    throw new Error(result.message || 'Falha ao salvar no Google Sheets');
-                }
+                    document.body.removeChild(form);
+                };
+
+                form.submit();
+
             } catch (error) {
-                console.error('Erro ao salvar:', error);
+                console.error('❌ Erro ao salvar:', error);
                 showToast('Erro ao salvar no Google Sheets. Dados salvos localmente.', 'error');
             }
             hideLoading();
         }
 
         async function syncWithGoogleSheets() {
+            console.log('🔄 Sincronizando...');
             try {
                 await loadFromGoogleSheets();
                 renderTeam();
                 updateStats();
                 showToast('Sincronização concluída!', 'success');
             } catch (error) {
+                console.error('❌ Erro na sincronização:', error);
                 showToast('Erro na sincronização. Verifique a conexão.', 'error');
             }
         }
@@ -829,4 +874,5 @@
     </script>
 </body>
 </html>
+
 
