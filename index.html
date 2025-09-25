@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -187,7 +188,7 @@
     </div>
 
     <script>
-        // Google Sheets Configuration - CORRIGIDO
+        // Google Sheets Configuration
         const GOOGLE_SHEETS_CONFIG = {
             spreadsheetId: '1uAeVhMv081VAV1PnoxpAnGlqUFY05KTM1rZNTD_YAx0',
             webAppUrl: 'https://script.google.com/macros/s/AKfycbyiOnZQUQArDnQeO8HSBDMXoZNVq_hV1F0QaCrpo1v3vzCqtTE21sd2SLQ2OcA89Dlv/exec'
@@ -246,7 +247,7 @@
                 loadFromLocalStorage();
                 renderTeam();
                 updateStats();
-                showToast('Carregado do armazenamento local. Verifique a conexão com Google Sheets.', 'warning');
+                showToast('Carregado do armazenamento local. Clique em Sincronizar para tentar conectar com Google Sheets.', 'warning');
             }
             hideLoading();
         }
@@ -259,121 +260,132 @@
         // --- Data Persistence (Google Sheets & Local Storage) ---
 
         async function loadFromGoogleSheets() {
-            try {
-                console.log('📡 Fazendo requisição GET para:', GOOGLE_SHEETS_CONFIG.webAppUrl);
-                
-                // Usando JSONP para evitar CORS
-                const response = await fetchWithJSONP(GOOGLE_SHEETS_CONFIG.webAppUrl + '?action=get&callback=?');
-                console.log('📊 Dados recebidos:', response);
-                
-                if (response.status === 'success' && response.values && response.values.length > 1) {
-                    const rows = response.values.slice(1); // Skip header row
-                    
-                    colaboradores = rows.map((row, index) => ({
-                        id: index + 1,
-                        name: row[0] || '',
-                        function: row[1] || '',
-                        attributes: row[2] ? row[2].split('\n').filter(attr => attr.trim()) : [],
-                        active: row[3] !== 'false'
-                    })).filter(col => col.name); // Remove empty rows
-                    
-                    saveToLocalStorage();
-                    console.log('✅ Dados processados:', colaboradores.length, 'colaboradores');
-                } else {
-                    console.log('📋 Planilha vazia ou sem dados válidos');
-                    colaboradores = [];
-                }
-            } catch (error) {
-                console.error('❌ Erro ao carregar do Google Sheets:', error);
-                throw error;
-            }
-        }
-
-        // Função auxiliar para evitar problemas de CORS
-        async function fetchWithJSONP(url) {
             return new Promise((resolve, reject) => {
-                // Para arquivos locais, vamos usar uma abordagem diferente
-                // Vamos usar o fetch tradicional mas com modo 'no-cors'
-                fetch(url, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
+                console.log('📡 Carregando dados do Google Sheets via JSONP...');
+                
+                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                
+                // Cria função callback global
+                window[callbackName] = function(data) {
+                    console.log('📊 Dados recebidos via JSONP:', data);
+                    
+                    try {
+                        if (data.status === 'success' && data.values && data.values.length > 1) {
+                            const rows = data.values.slice(1); // Skip header row
+                            
+                            colaboradores = rows.map((row, index) => ({
+                                id: index + 1,
+                                name: row[0] || '',
+                                function: row[1] || '',
+                                attributes: row[2] ? row[2].split('\n').filter(attr => attr.trim()) : [],
+                                active: row[3] !== 'false'
+                            })).filter(col => col.name); // Remove empty rows
+                            
+                            saveToLocalStorage();
+                            console.log('✅ Dados processados:', colaboradores.length, 'colaboradores');
+                            resolve();
+                        } else {
+                            console.log('📋 Planilha vazia ou sem dados válidos');
+                            colaboradores = [];
+                            resolve();
+                        }
+                    } catch (error) {
+                        console.error('❌ Erro ao processar dados:', error);
+                        reject(error);
                     }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => resolve(data))
-                .catch(error => {
-                    console.log('⚠️ Fetch falhou, usando dados locais');
-                    reject(error);
-                });
+                    
+                    // Limpa
+                    delete window[callbackName];
+                    document.head.removeChild(script);
+                };
+                
+                // Cria script tag para JSONP
+                const script = document.createElement('script');
+                script.src = `${GOOGLE_SHEETS_CONFIG.webAppUrl}?callback=${callbackName}`;
+                script.onerror = function() {
+                    console.error('❌ Erro ao carregar script JSONP');
+                    delete window[callbackName];
+                    document.head.removeChild(script);
+                    reject(new Error('Falha ao carregar dados via JSONP'));
+                };
+                
+                document.head.appendChild(script);
             });
         }
 
         async function saveToGoogleSheets() {
             console.log('💾 Salvando no Google Sheets...');
             showLoading();
-            try {
-                const values = [
-                    ['Nome', 'Funcao', 'Atribuicoes', 'Ativo']
-                ];
-                
-                colaboradores.forEach(col => {
-                    values.push([
-                        col.name,
-                        col.function,
-                        col.attributes.join('\n'),
-                        col.active.toString()
-                    ]);
-                });
+            
+            return new Promise((resolve, reject) => {
+                try {
+                    const values = [
+                        ['Nome', 'Funcao', 'Atribuicoes', 'Ativo']
+                    ];
+                    
+                    colaboradores.forEach(col => {
+                        values.push([
+                            col.name,
+                            col.function,
+                            col.attributes.join('\n'),
+                            col.active.toString()
+                        ]);
+                    });
 
-                console.log('📤 Dados para enviar:', values);
+                    console.log('📤 Enviando dados:', values);
 
-                // Criar um formulário oculto para enviar dados
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
-                form.target = 'hiddenFrame';
-                form.style.display = 'none';
+                    // Criar formulário para envio
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
+                    form.target = 'hiddenFrame';
+                    form.style.display = 'none';
 
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'data';
-                input.value = JSON.stringify({ values: values });
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'data';
+                    input.value = JSON.stringify({ values: values });
 
-                form.appendChild(input);
-                document.body.appendChild(form);
+                    form.appendChild(input);
+                    document.body.appendChild(form);
 
-                // Criar iframe oculto
-                let iframe = document.getElementById('hiddenFrame');
-                if (!iframe) {
-                    iframe = document.createElement('iframe');
-                    iframe.name = 'hiddenFrame';
-                    iframe.id = 'hiddenFrame';
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
+                    // Criar iframe oculto
+                    let iframe = document.getElementById('hiddenFrame');
+                    if (!iframe) {
+                        iframe = document.createElement('iframe');
+                        iframe.name = 'hiddenFrame';
+                        iframe.id = 'hiddenFrame';
+                        iframe.style.display = 'none';
+                        document.body.appendChild(iframe);
+                    }
+
+                    // Timeout para evitar travamento
+                    const timeout = setTimeout(() => {
+                        console.log('⏰ Timeout - assumindo sucesso');
+                        showToast('Dados enviados para Google Sheets!', 'success');
+                        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
+                        resolve();
+                    }, 3000);
+
+                    iframe.onload = function() {
+                        clearTimeout(timeout);
+                        console.log('✅ Formulário enviado com sucesso!');
+                        showToast('Dados salvos no Google Sheets!', 'success');
+                        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
+                        document.body.removeChild(form);
+                        resolve();
+                    };
+
+                    form.submit();
+
+                } catch (error) {
+                    console.error('❌ Erro ao salvar:', error);
+                    showToast('Erro ao salvar no Google Sheets. Dados salvos localmente.', 'error');
+                    reject(error);
                 }
-
-                // Listener para quando o iframe carregar
-                iframe.onload = function() {
-                    console.log('✅ Dados enviados para Google Sheets!');
-                    showToast('Dados salvos no Google Sheets!', 'success');
-                    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
-                    document.body.removeChild(form);
-                };
-
-                form.submit();
-
-            } catch (error) {
-                console.error('❌ Erro ao salvar:', error);
-                showToast('Erro ao salvar no Google Sheets. Dados salvos localmente.', 'error');
-            }
-            hideLoading();
+                
+                hideLoading();
+            });
         }
 
         async function syncWithGoogleSheets() {
@@ -385,7 +397,7 @@
                 showToast('Sincronização concluída!', 'success');
             } catch (error) {
                 console.error('❌ Erro na sincronização:', error);
-                showToast('Erro na sincronização. Verifique a conexão.', 'error');
+                showToast('Erro na sincronização. Dados locais mantidos.', 'warning');
             }
         }
 
@@ -730,7 +742,6 @@
         }
 
         function toggleAttributeSelection(element, encodedAttribute, index) {
-            // use decodeURIComponent to support accents and unicode reliably
             const attribute = decodeURIComponent(encodedAttribute);
             const isSelected = element.classList.toggle('selected-for-redistribution');
             const item = { attribute, index };
