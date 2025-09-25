@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,73 +8,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .card-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.6);
-        }
-        
-        .modal-content {
-            transition: all 0.3s ease-in-out;
-            transform: scale(0.95);
-            opacity: 0;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-            opacity: 1;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-secondary {
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .loading-spinner {
-            border: 3px solid #f3f4f6;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .selected-for-redistribution {
-            background-color: #d1fae5;
-            border-color: #10B981;
-            color: #065f46;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .card-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.6); }
+        .modal-content { transition: all 0.3s ease-in-out; transform: scale(0.95); opacity: 0; }
+        .modal.active .modal-content { transform: scale(1); opacity: 1; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+        .btn-secondary { transition: all 0.3s ease; }
+        .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .loading-spinner { border: 3px solid #f3f4f6; border-top: 3px solid #667eea; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .selected-for-redistribution { background-color: #d1fae5; border-color: #10B981; color: #065f46; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    
-    <!-- Header -->
     <header class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -102,51 +49,38 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-users text-2xl text-blue-600"></i>
-                    </div>
+                    <div class="flex-shrink-0"><i class="fas fa-users text-2xl text-blue-600"></i></div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500">Total Colaboradores</p>
                         <p id="totalColaboradores" class="text-2xl font-semibold text-gray-900">0</p>
                     </div>
                 </div>
             </div>
-            
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-tasks text-2xl text-green-600"></i>
-                    </div>
+                    <div class="flex-shrink-0"><i class="fas fa-tasks text-2xl text-green-600"></i></div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500">Total Atribuições</p>
                         <p id="totalAtribuicoes" class="text-2xl font-semibold text-gray-900">0</p>
                     </div>
                 </div>
             </div>
-            
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-exchange-alt text-2xl text-purple-600"></i>
-                    </div>
+                    <div class="flex-shrink-0"><i class="fas fa-exchange-alt text-2xl text-purple-600"></i></div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500">Redistribuições</p>
                         <p id="totalRedistribuicoes" class="text-2xl font-semibold text-gray-900">0</p>
                     </div>
                 </div>
             </div>
-            
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-calendar text-2xl text-yellow-600"></i>
-                    </div>
+                    <div class="flex-shrink-0"><i class="fas fa-calendar text-2xl text-yellow-600"></i></div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500">Última Atualização</p>
                         <p id="lastUpdate" class="text-sm font-semibold text-gray-900">Agora</p>
@@ -155,7 +89,6 @@
             </div>
         </div>
 
-        <!-- Actions Bar -->
         <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <h2 class="text-xl font-semibold text-gray-900">Equipe</h2>
             <div class="flex space-x-3">
@@ -166,41 +99,29 @@
             </div>
         </div>
 
-        <!-- Team Grid -->
         <div id="teamGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Cards will be dynamically inserted here -->
         </div>
     </main>
 
-    <!-- Modal Base HTML -->
     <div id="modalBase" class="modal fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="modal-backdrop fixed inset-0"></div>
         <div class="modal-content bg-white rounded-lg shadow-xl w-full relative">
-            <div class="p-6">
-                <!-- Content will be injected here -->
-            </div>
+            <div class="p-6"></div>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2">
-        <!-- Toasts will be inserted here -->
-    </div>
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
     <script>
-        // Google Sheets Configuration
+        // Configuração
         const GOOGLE_SHEETS_CONFIG = {
-            spreadsheetId: '1uAeVhMv081VAV1PnoxpAnGlqUFY05KTM1rZNTD_YAx0',
             webAppUrl: 'https://script.google.com/macros/s/AKfycbyiOnZQUQArDnQeO8HSBDMXoZNVq_hV1F0QaCrpo1v3vzCqtTE21sd2SLQ2OcA89Dlv/exec'
         };
 
-        // Global State
         let colaboradores = [];
         let redistributionCount = 0;
         let selectedAttributes = [];
-        let isInitialLoad = true;
 
-        // Modal State
         const modal = document.getElementById('modalBase');
         const modalContent = modal.querySelector('.modal-content');
 
@@ -214,8 +135,7 @@
         let currentModalType = null;
         let currentModalData = null;
 
-        // --- Core Functions ---
-
+        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Iniciando aplicação...');
             initializeApp();
@@ -223,31 +143,27 @@
         });
 
         async function initializeApp() {
-            console.log('📊 Inicializando aplicação...');
             showLoading();
             try {
-                console.log('📥 Tentando carregar do Google Sheets...');
+                console.log('📥 Carregando do Google Sheets...');
                 await loadFromGoogleSheets();
                 if (colaboradores.length === 0) {
-                    console.log('📂 Planilha vazia, carregando do localStorage...');
                     loadFromLocalStorage();
                     if (colaboradores.length > 0) {
-                        console.log('💾 Sincronizando localStorage com Google Sheets...');
                         await saveToGoogleSheets();
                     }
                 } else {
-                    console.log('✅ Dados carregados do Google Sheets:', colaboradores.length, 'colaboradores');
                     saveToLocalStorage();
                 }
                 renderTeam();
                 updateStats();
                 showToast('Sistema carregado com sucesso!', 'success');
             } catch (error) {
-                console.error('❌ Erro ao inicializar:', error);
+                console.error('❌ Erro:', error);
                 loadFromLocalStorage();
                 renderTeam();
                 updateStats();
-                showToast('Carregado do armazenamento local. Clique em Sincronizar para tentar conectar com Google Sheets.', 'warning');
+                showToast('Usando dados locais. Clique em Sincronizar.', 'warning');
             }
             hideLoading();
         }
@@ -257,56 +173,51 @@
             document.getElementById('syncBtn').addEventListener('click', syncWithGoogleSheets);
         }
 
-        // --- Data Persistence (Google Sheets & Local Storage) ---
-
-        async function loadFromGoogleSheets() {
+        // JSONP melhorado
+        function loadFromGoogleSheets() {
             return new Promise((resolve, reject) => {
-                console.log('📡 Carregando dados do Google Sheets via JSONP...');
-                
-                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-                
-                // Cria função callback global
+                const callbackName = 'gs_' + Date.now();
+                const timeout = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('Timeout'));
+                }, 10000);
+
+                function cleanup() {
+                    clearTimeout(timeout);
+                    if (window[callbackName]) delete window[callbackName];
+                    const script = document.getElementById(callbackName);
+                    if (script) document.head.removeChild(script);
+                }
+
                 window[callbackName] = function(data) {
-                    console.log('📊 Dados recebidos via JSONP:', data);
+                    cleanup();
+                    console.log('📊 Dados recebidos:', data);
                     
-                    try {
-                        if (data.status === 'success' && data.values && data.values.length > 1) {
-                            const rows = data.values.slice(1); // Skip header row
-                            
-                            colaboradores = rows.map((row, index) => ({
-                                id: index + 1,
-                                name: row[0] || '',
-                                function: row[1] || '',
-                                attributes: row[2] ? row[2].split('\n').filter(attr => attr.trim()) : [],
-                                active: row[3] !== 'false'
-                            })).filter(col => col.name); // Remove empty rows
-                            
-                            saveToLocalStorage();
-                            console.log('✅ Dados processados:', colaboradores.length, 'colaboradores');
-                            resolve();
-                        } else {
-                            console.log('📋 Planilha vazia ou sem dados válidos');
-                            colaboradores = [];
-                            resolve();
-                        }
-                    } catch (error) {
-                        console.error('❌ Erro ao processar dados:', error);
-                        reject(error);
+                    if (data.status === 'success' && data.values && data.values.length > 1) {
+                        const rows = data.values.slice(1);
+                        colaboradores = rows.map((row, index) => ({
+                            id: index + 1,
+                            name: row[0] || '',
+                            function: row[1] || '',
+                            attributes: row[2] ? row[2].split('\n').filter(attr => attr.trim()) : [],
+                            active: row[3] !== 'false'
+                        })).filter(col => col.name);
+                        
+                        saveToLocalStorage();
+                        console.log('✅ Dados processados:', colaboradores.length);
+                        resolve();
+                    } else {
+                        colaboradores = [];
+                        resolve();
                     }
-                    
-                    // Limpa
-                    delete window[callbackName];
-                    document.head.removeChild(script);
                 };
-                
-                // Cria script tag para JSONP
+
                 const script = document.createElement('script');
-                script.src = `${GOOGLE_SHEETS_CONFIG.webAppUrl}?callback=${callbackName}`;
-                script.onerror = function() {
-                    console.error('❌ Erro ao carregar script JSONP');
-                    delete window[callbackName];
-                    document.head.removeChild(script);
-                    reject(new Error('Falha ao carregar dados via JSONP'));
+                script.id = callbackName;
+                script.src = `${GOOGLE_SHEETS_CONFIG.webAppUrl}?callback=${callbackName}&_=${Date.now()}`;
+                script.onerror = () => {
+                    cleanup();
+                    reject(new Error('Erro JSONP'));
                 };
                 
                 document.head.appendChild(script);
@@ -314,90 +225,67 @@
         }
 
         async function saveToGoogleSheets() {
-            console.log('💾 Salvando no Google Sheets...');
+            console.log('💾 Salvando...');
             showLoading();
             
-            return new Promise((resolve, reject) => {
-                try {
-                    const values = [
-                        ['Nome', 'Funcao', 'Atribuicoes', 'Ativo']
-                    ];
-                    
-                    colaboradores.forEach(col => {
-                        values.push([
-                            col.name,
-                            col.function,
-                            col.attributes.join('\n'),
-                            col.active.toString()
-                        ]);
-                    });
+            try {
+                const values = [['Nome', 'Funcao', 'Atribuicoes', 'Ativo']];
+                colaboradores.forEach(col => {
+                    values.push([col.name, col.function, col.attributes.join('\n'), col.active.toString()]);
+                });
 
-                    console.log('📤 Enviando dados:', values);
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
+                form.target = 'hiddenFrame';
+                form.style.display = 'none';
 
-                    // Criar formulário para envio
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
-                    form.target = 'hiddenFrame';
-                    form.style.display = 'none';
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'data';
+                input.value = JSON.stringify({ values: values });
 
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'data';
-                    input.value = JSON.stringify({ values: values });
+                form.appendChild(input);
+                document.body.appendChild(form);
 
-                    form.appendChild(input);
-                    document.body.appendChild(form);
-
-                    // Criar iframe oculto
-                    let iframe = document.getElementById('hiddenFrame');
-                    if (!iframe) {
-                        iframe = document.createElement('iframe');
-                        iframe.name = 'hiddenFrame';
-                        iframe.id = 'hiddenFrame';
-                        iframe.style.display = 'none';
-                        document.body.appendChild(iframe);
-                    }
-
-                    // Timeout para evitar travamento
-                    const timeout = setTimeout(() => {
-                        console.log('⏰ Timeout - assumindo sucesso');
-                        showToast('Dados enviados para Google Sheets!', 'success');
-                        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
-                        resolve();
-                    }, 3000);
-
-                    iframe.onload = function() {
-                        clearTimeout(timeout);
-                        console.log('✅ Formulário enviado com sucesso!');
-                        showToast('Dados salvos no Google Sheets!', 'success');
-                        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
-                        document.body.removeChild(form);
-                        resolve();
-                    };
-
-                    form.submit();
-
-                } catch (error) {
-                    console.error('❌ Erro ao salvar:', error);
-                    showToast('Erro ao salvar no Google Sheets. Dados salvos localmente.', 'error');
-                    reject(error);
+                let iframe = document.getElementById('hiddenFrame');
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.name = 'hiddenFrame';
+                    iframe.id = 'hiddenFrame';
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
                 }
-                
-                hideLoading();
-            });
+
+                const timeout = setTimeout(() => {
+                    showToast('Dados enviados!', 'success');
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
+                    if (document.body.contains(form)) document.body.removeChild(form);
+                }, 2000);
+
+                iframe.onload = function() {
+                    clearTimeout(timeout);
+                    showToast('Dados salvos no Google Sheets!', 'success');
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
+                    if (document.body.contains(form)) document.body.removeChild(form);
+                };
+
+                form.submit();
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                showToast('Erro ao salvar. Dados mantidos localmente.', 'error');
+            }
+            hideLoading();
         }
 
         async function syncWithGoogleSheets() {
-            console.log('🔄 Sincronizando...');
             try {
                 await loadFromGoogleSheets();
                 renderTeam();
                 updateStats();
                 showToast('Sincronização concluída!', 'success');
             } catch (error) {
-                console.error('❌ Erro na sincronização:', error);
-                showToast('Erro na sincronização. Dados locais mantidos.', 'warning');
+                showToast('Erro na sincronização.', 'error');
             }
         }
 
@@ -418,28 +306,14 @@
                         id: 1,
                         name: "Cristiane Godoi",
                         function: "Analista Marítimo Rotina",
-                        attributes: ["Coordenação dos processos marítimos: Containers Padrão – DRY e HC", "Abertura de Processos no Importsys: Marítimo carga geral", "Abertura de Processos no Icomex: Marítimo carga geral", "Aprovação de Debit Note / Emissão de Credit note / Debit note: Marítimo carga geral", "Elaboração de Originais no modal marítimo carga geral", "Envio de Pré-Alerta Marítimo carga geral", "Alimentação de desvios no Importsys Marítimo carga geral", "FUP / SLA / Atualização Relatório Marítimo carga geral", "Impressão dos originais e envio para Santos", "Relatório Demurrage e Lavagem de CTN", "Embarque Marítimos Spots carga geral e OVS"],
+                        attributes: ["Coordenação dos processos marítimos: Containers Padrão – DRY e HC", "Abertura de Processos no Importsys: Marítimo carga geral"],
                         active: true
                     },
                     {
                         id: 2,
                         name: "Brunna",
                         function: "Analista Marítimo OVS",
-                        attributes: ["Coordenação dos processos marítimos: Embarque marítimo OVS BID", "Abertura de Processos no Importsys: Marítimo OVS", "Abertura de Processos no Icomex: Marítimo OVS", "Aprovação de Debit Note / Emissão de Credit note / Debit note: Marítimo OVS", "Elaboração de Originais no modal marítimo OVS", "Envio de Pré-Alerta Marítimo OVS", "Alimentação de desvios no Importsys Marítimo OVS", "FUP / SLA / Atualização Relatório Marítimo OVS"],
-                        active: true
-                    },
-                    {
-                        id: 3,
-                        name: "Giulia Gouvea",
-                        function: "Analista Aéreo e Marítimo",
-                        attributes: ["Realização do RA: Spots (os analistas comunicarão sobre o fim do embarque)", "Elaboração de Propostas: Spots", "Cotação Spot", "Projetos Célula Embraer", "Elaboração de atas das reuniões", "Solicitação de autorizações de custo extra / CW fora do BID / demais autorizações / autorização AOG definidas em reunião", "Data de pick up – Aéreo e Marítimo", "Levantamento de históricos dos processos para Reinaldo", "Eventuais ajudas no RA BID solicitadas pelo Reinaldo", "Embarque Aéreo Spots"],
-                        active: true
-                    },
-                    {
-                        id: 4,
-                        name: "Luis Souza",
-                        function: "Analista Aéreo Rotina",
-                        attributes: ["Relatório de Faturas no Warehouse", "Cobrança do valor do combustível mensalmente", "Coordenação dos processos aéreos: AOG / Rotina / B2B / (Charter – em conjunto com o Reinaldo)", "Embarque Aéreo Spots carga geral e OVS", "Abertura de Processos no Importsys: Aéreo carga geral", "Abertura de Processos no Icomex: Aéreo carga geral", "Aprovação de Debit Note / Emissão de Credit note / Debit note: Aéreo", "Envio de Pré-Alerta Aéreo carga geral", "Alimentação de desvios no Importsys Aéreo carga geral", "FUP / SLA / Atualização Relatório Aéreo carga geral"],
+                        attributes: ["Coordenação dos processos marítimos: Embarque marítimo OVS BID", "Abertura de Processos no Importsys: Marítimo OVS"],
                         active: true
                     }
                 ];
@@ -449,8 +323,6 @@
                 redistributionCount = parseInt(savedCount);
             }
         }
-
-        // --- UI Rendering ---
 
         function renderTeam() {
             const teamGrid = document.getElementById('teamGrid');
@@ -523,167 +395,56 @@
             return card;
         }
 
-        // --- Modal Control ---
-
+        // Modais e outras funções (simplificadas para teste)
         function openModal(type, data = null) {
             currentModalType = type;
             currentModalData = data;
             
             let html = '';
-            let maxWidth = 'max-w-md';
+            if (type === MODAL_TYPES.ADD_EDIT) {
+                const colaborador = data ? colaboradores.find(c => c.id === data) : null;
+                const modalTitle = colaborador ? 'Editar Colaborador' : 'Adicionar Colaborador';
+                const name = colaborador ? colaborador.name : '';
+                const func = colaborador ? colaborador.function : '';
+                const attributes = colaborador ? colaborador.attributes.join('\n') : '';
 
-            switch (type) {
-                case MODAL_TYPES.ADD_EDIT:
-                    const colaborador = data ? colaboradores.find(c => c.id === data) : null;
-                    const modalTitle = colaborador ? 'Editar Colaborador' : 'Adicionar Colaborador';
-                    const name = colaborador ? colaborador.name : '';
-                    const func = colaborador ? colaborador.function : '';
-                    const attributes = colaborador ? colaborador.attributes.join('\n') : '';
-
-                    html = `
-                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-gray-900">${modalTitle}</h3>
-                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <form id="collaboratorForm" class="p-6">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                                    <input type="text" id="collaboratorName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${name}" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Função Principal</label>
-                                    <input type="text" id="collaboratorFunction" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${func}" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Atribuições (uma por linha)</label>
-                                    <textarea id="collaboratorAttributes" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite uma atribuição por linha...">${attributes}</textarea>
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-3 mt-6">
-                                <button type="button" onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
-                                    Cancelar
-                                </button>
-                                <button type="submit" class="btn-primary text-white px-6 py-2 rounded-md font-medium">
-                                    Salvar
-                                </button>
-                            </div>
-                        </form>
-                    `;
-                    break;
-                case MODAL_TYPES.VIEW_DETAILS:
-                    const viewColaborador = colaboradores.find(c => c.id === data);
-                    if (!viewColaborador) { showToast('Colaborador não encontrado.', 'error'); return; }
-                    maxWidth = 'max-w-4xl';
-                    html = `
-                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-gray-900">Detalhes do Colaborador</h3>
-                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="p-6">
-                            <div class="mb-4">
-                                <p class="text-sm font-medium text-gray-500">Nome:</p>
-                                <h4 class="text-xl font-bold text-gray-900">${viewColaborador.name}</h4>
-                            </div>
-                            <div class="mb-4">
-                                <p class="text-sm font-medium text-gray-500">Função:</p>
-                                <p class="text-lg text-gray-800">${viewColaborador.function}</p>
+                html = `
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">${modalTitle}</h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="collaboratorForm" class="p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                                <input type="text" id="collaboratorName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${name}" required>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500 mb-2">Atribuições:</p>
-                                <ul class="list-disc list-inside space-y-2 text-gray-700 max-h-60 overflow-y-auto pr-2">
-                                    ${viewColaborador.attributes.map(attr => `<li>${attr}</li>`).join('')}
-                                </ul>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Função Principal</label>
+                                <input type="text" id="collaboratorFunction" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="${func}" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Atribuições (uma por linha)</label>
+                                <textarea id="collaboratorAttributes" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite uma atribuição por linha...">${attributes}</textarea>
                             </div>
                         </div>
-                    `;
-                    break;
-                case MODAL_TYPES.REDISTRIBUTION:
-                    const sourceColaborador = colaboradores.find(c => c.id === data);
-                    if (!sourceColaborador) { showToast('Colaborador não encontrado.', 'error'); return; }
-                    
-                    const otherCollaborators = colaboradores.filter(c => c.id !== data && c.active);
-                    selectedAttributes = [];
-
-                    html = `
-                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-gray-900">Redistribuir Atribuições</h3>
-                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="button" onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn-primary text-white px-6 py-2 rounded-md font-medium">
+                                Salvar
                             </button>
                         </div>
-                        <div class="p-6">
-                            <p class="text-sm text-gray-600 mb-4">Redistribuir atribuições de: <span class="font-semibold">${sourceColaborador.name}</span></p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 class="text-md font-semibold text-gray-900 mb-3">Atribuições Disponíveis</h4>
-                                    <div id="attributesList" class="space-y-2 max-h-60 overflow-y-auto">
-                                        ${sourceColaborador.attributes.map((attr, index) => `
-                                            <div class="p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleAttributeSelection(this, '${encodeURIComponent(attr)}', ${index})">
-                                                ${attr}
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-md font-semibold text-gray-900 mb-3">Redistribuir para:</h4>
-                                    <select id="targetCollaborator" onchange="checkRedistributionConditions()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
-                                        <option value="">Selecione um colaborador</option>
-                                        ${otherCollaborators.map(col => `<option value="${col.id}">${col.name}</option>`).join('')}
-                                    </select>
-                                    
-                                    <div id="selectedAttributes" class="border border-gray-200 rounded-lg p-4 min-h-32">
-                                        <p class="text-gray-500 text-sm">Selecione atribuições para redistribuir</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-3 mt-6">
-                                <button onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
-                                    Cancelar
-                                </button>
-                                <button id="applyRedistributionBtn" onclick="applyRedistribution(${sourceColaborador.id})" class="btn-primary text-white px-6 py-2 rounded-md font-medium opacity-50 cursor-not-allowed" disabled>
-                                    Aplicar Redistribuição
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case MODAL_TYPES.DELETE_CONFIRMATION:
-                    const deleteColaborador = colaboradores.find(c => c.id === data);
-                    if (!deleteColaborador) { showToast('Colaborador não encontrado.', 'error'); return; }
-                    maxWidth = 'max-w-sm';
-                    html = `
-                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-gray-900">Confirmar Exclusão</h3>
-                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="p-6">
-                            <p class="text-gray-700 mb-6">Tem certeza que deseja excluir <span class="font-semibold">${deleteColaborador.name}</span>? Esta ação não pode ser desfeita.</p>
-                            <div class="flex justify-end space-x-3">
-                                <button onclick="closeModal()" class="btn-secondary px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
-                                    Cancelar
-                                </button>
-                                <button onclick="performDelete(${deleteColaborador.id})" class="bg-red-600 text-white px-6 py-2 rounded-md font-medium hover:bg-red-700 transition-colors duration-200">
-                                    Confirmar
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    break;
-            }
-
-            modalContent.innerHTML = html;
-            modalContent.classList.add(maxWidth);
-            modal.classList.add('active');
-            modal.classList.remove('hidden');
-            
-            if (type === MODAL_TYPES.ADD_EDIT) {
+                    </form>
+                `;
+                
+                modalContent.innerHTML = html;
+                modal.classList.add('active');
+                modal.classList.remove('hidden');
+                
                 document.getElementById('collaboratorForm').addEventListener('submit', handleCollaboratorSubmit);
             }
         }
@@ -694,12 +455,7 @@
                 modal.classList.add('hidden');
                 modalContent.innerHTML = '';
             }, 300);
-            currentModalType = null;
-            currentModalData = null;
-            selectedAttributes = [];
         }
-
-        // --- Action Handlers ---
 
         function handleCollaboratorSubmit(event) {
             event.preventDefault();
@@ -721,7 +477,7 @@
                 colaborador.name = name;
                 colaborador.function = func;
                 colaborador.attributes = attributes;
-                showToast('Colaborador atualizado com sucesso!', 'success');
+                showToast('Colaborador atualizado!', 'success');
             } else {
                 const newId = Math.max(...colaboradores.map(c => c.id), 0) + 1;
                 colaboradores.push({
@@ -731,7 +487,7 @@
                     attributes,
                     active: true
                 });
-                showToast('Colaborador adicionado com sucesso!', 'success');
+                showToast('Colaborador adicionado!', 'success');
             }
             
             saveToLocalStorage();
@@ -741,100 +497,6 @@
             closeModal();
         }
 
-        function toggleAttributeSelection(element, encodedAttribute, index) {
-            const attribute = decodeURIComponent(encodedAttribute);
-            const isSelected = element.classList.toggle('selected-for-redistribution');
-            const item = { attribute, index };
-            
-            if (isSelected) {
-                selectedAttributes.push(item);
-            } else {
-                selectedAttributes = selectedAttributes.filter(attr => attr.index !== index);
-            }
-            updateSelectedAttributes();
-            checkRedistributionConditions();
-        }
-
-        function updateSelectedAttributes() {
-            const container = document.getElementById('selectedAttributes');
-            
-            if (!container) return;
-            
-            if (selectedAttributes.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-sm">Selecione atribuições para redistribuir</p>';
-            } else {
-                container.innerHTML = `
-                    <div class="space-y-2">
-                        <p class="font-semibold text-sm text-gray-700">Atribuições selecionadas (${selectedAttributes.length}):</p>
-                        ${selectedAttributes.map(item => 
-                            `<div class="bg-green-50 border border-green-200 rounded-md p-2 text-sm">${item.attribute}</div>`
-                        ).join('')}
-                    </div>
-                `;
-            }
-        }
-
-        function checkRedistributionConditions() {
-            const applyBtn = document.getElementById('applyRedistributionBtn');
-            const targetSelect = document.getElementById('targetCollaborator');
-            const targetId = targetSelect ? targetSelect.value : null;
-            
-            if (!applyBtn) return;
-            
-            if (selectedAttributes.length > 0 && targetId) {
-                applyBtn.disabled = false;
-                applyBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                applyBtn.disabled = true;
-                applyBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        function applyRedistribution(sourceId) {
-            const targetId = parseInt(document.getElementById('targetCollaborator').value);
-            
-            if (!targetId || selectedAttributes.length === 0) {
-                showToast('Selecione um colaborador de destino e pelo menos uma atribuição!', 'error');
-                return;
-            }
-            
-            const sourceCollaborator = colaboradores.find(c => c.id === sourceId);
-            const targetCollaborator = colaboradores.find(c => c.id === targetId);
-            
-            selectedAttributes.forEach(item => {
-                targetCollaborator.attributes.push(item.attribute);
-            });
-            
-            selectedAttributes.sort((a, b) => b.index - a.index).forEach(item => {
-                sourceCollaborator.attributes.splice(item.index, 1);
-            });
-            
-            redistributionCount++;
-            
-            saveToLocalStorage();
-            saveToGoogleSheets();
-            renderTeam();
-            updateStats();
-            closeModal();
-            
-            showToast(`${selectedAttributes.length} atribuição(ões) redistribuída(s) com sucesso!`, 'success');
-        }
-
-        function performDelete(id) {
-            const colaborador = colaboradores.find(c => c.id === id);
-            if (colaborador) {
-                colaborador.active = false;
-                saveToLocalStorage();
-                saveToGoogleSheets();
-                renderTeam();
-                updateStats();
-                showToast('Colaborador removido com sucesso!', 'success');
-            }
-            closeModal();
-        }
-
-        // --- Utility Functions ---
-        
         function updateStats() {
             const activeCollaborators = colaboradores.filter(c => c.active);
             const totalAttributes = activeCollaborators.reduce((sum, col) => sum + col.attributes.length, 0);
@@ -871,10 +533,7 @@
             }[type];
             
             toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2`;
-            toast.innerHTML = `
-                <i class="${icon}"></i>
-                <span>${message}</span>
-            `;
+            toast.innerHTML = `<i class="${icon}"></i><span>${message}</span>`;
             
             document.getElementById('toastContainer').appendChild(toast);
             
@@ -885,5 +544,4 @@
     </script>
 </body>
 </html>
-
 
